@@ -1,0 +1,25 @@
+#####TREINO HDF5#####
+import h5py
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Carregar o arquivo de imagens de treinamento
+train_hdf5_path = './ISIC 2024/isic-2024-challenge/train-image.hdf5'
+train_metadata_path = './ISIC 2024/isic-2024-challenge/train-metadata.csv'
+
+# Abrir o arquivo HDF5
+with h5py.File(train_hdf5_path, 'r') as hdf:
+    # contagem chaves no arquivo (ids das imagens)
+    keys = list(hdf.keys())
+    print(f"Total de imagens de treinamento: {len(keys)}")
+    
+    # carregar primeira imagem para exemplo
+    img_id = keys[0]  # ID da primeira imagem
+    img_data = hdf[img_id][()]
+    print(f"Dimensões da imagem {img_id}: {img_data.shape}, Tipo: {img_data.dtype}")
+
+    # visualizar a imagem
+    # plt.imshow(img_data)
+    # plt.title(f"ID da Imagem: {img_id}")
+    # plt.show()
