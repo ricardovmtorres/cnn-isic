@@ -8,6 +8,7 @@ from sklearn.metrics import roc_auc_score
 import cv2
 import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping
+from imblearn.over_sampling import RandomOverSampler  # Importando o RandomOverSampler
 
 # Configurando o caminho base e carregando os dados
 BASE_PATH = "./ISIC 2024/isic-2024-challenge"
@@ -19,7 +20,7 @@ df = df.ffill()
 images = []
 labels = []
 
-for index, row in df.iterrows():
+for index, row in df.head(25000).iterrows():
     print(index)
     img_path = os.path.join(image_dir, row['isic_id'] + '.jpg')
     img = cv2.imread(img_path)
@@ -37,23 +38,33 @@ print(f"y shape: {y.shape}")
 
 # Dividindo os dados em treino e validação
 X_train, X_val, y_train, y_val = train_test_split(X, y, test_size=0.25, random_state=42, stratify=y)
+
+# # Realizando oversampling para ter 50/50 entre benignas e malignas
+# ros = RandomOverSampler(sampling_strategy='auto')  # O 'auto' fará o balanceamento 50/50
+# X_train_reshaped = X_train.reshape(X_train.shape[0], -1)  # Mudando a forma para 2D
+# X_train_resampled, y_train_resampled = ros.fit_resample(X_train_reshaped, y_train)
+
+# Redimensionando X_train_resampled de volta para 3D
+# X_train_resampled = X_train_resampled.reshape(-1, 64, 64, 3)
+
 class_weights = {0: (1 / np.sum(y_train == 0)) * (len(y_train) / 2.0),
                  1: (1 / np.sum(y_train == 1)) * (len(y_train) / 2.0)}
 
-# Contagem e porcentagem no conjunto de treino
-valores_train, contagens_train = np.unique(y_train, return_counts=True)
-total_train = len(y_train)
-print(f'Treino - Benigno (0): {contagens_train[0] if 0 in valores_train else 0} ({(contagens_train[0] / total_train) * 100:.2f}%), '
-      f'Maligno (1): {contagens_train[1] if 1 in valores_train else 0} ({(contagens_train[1] / total_train) * 100:.2f}%)')
-# Contagem e porcentagem no conjunto de validação
-valores_val, contagens_val = np.unique(y_val, return_counts=True)
-total_val = len(y_val)
-print(f'Validação - Benigno (0): {contagens_val[0] if 0 in valores_val else 0} ({(contagens_val[0] / total_val) * 100:.2f}%), '
-      f'Maligno (1): {contagens_val[1] if 1 in valores_val else 0} ({(contagens_val[1] / total_val) * 100:.2f}%)')
+# # Contagem e porcentagem no conjunto de treino
+# valores_train, contagens_train = np.unique(y_train_resampled, return_counts=True)
+# total_train = len(y_train_resampled)
+# print(f'Treino - Benigno (0): {contagens_train[0] if 0 in valores_train else 0} ({(contagens_train[0] / total_train) * 100:.2f}%), '
+#       f'Maligno (1): {contagens_train[1] if 1 in valores_train else 0} ({(contagens_train[1] / total_train) * 100:.2f}%)')
 
-# Normalizando os dados de treino e validação
-X_train = X_train / 255.0
-X_val = X_val / 255.0
+# # Contagem e porcentagem no conjunto de validação
+# valores_val, contagens_val = np.unique(y_val, return_counts=True)
+# total_val = len(y_val)
+# print(f'Validação - Benigno (0): {contagens_val[0] if 0 in valores_val else 0} ({(contagens_val[0] / total_val) * 100:.2f}%), '
+#       f'Maligno (1): {contagens_val[1] if 1 in valores_val else 0} ({(contagens_val[1] / total_val) * 100:.2f}%)')
+
+# # Normalizando os dados de treino e validação
+# X_train_resampled = X_train_resampled / 255.0
+# X_val = X_val / 255.0
 
 # Definindo o modelo com Dropout e regularização L2
 model = models.Sequential([

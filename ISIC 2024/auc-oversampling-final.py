@@ -33,6 +33,12 @@ y = np.array(labels)
 print(f"X shape: {X.shape}")
 print(f"y shape: {y.shape}")
 
+# quantidade e a proporção de benigno e maligno inicial
+valores_original, contagens_original = np.unique(y, return_counts=True)
+total_original = len(y)
+print(f'Antes do oversampling - Benigno (0): {contagens_original[0] if 0 in valores_original else 0} ({(contagens_original[0] / total_original) * 100:.2f}%), '
+      f'Maligno (1): {contagens_original[1] if 1 in valores_original else 0} ({(contagens_original[1] / total_original) * 100:.2f}%)')
+
 # oversampling antes do train-test split
 ros = RandomOverSampler(sampling_strategy='auto', random_state=42)
 X_resampled, y_resampled = ros.fit_resample(X.reshape(X.shape[0], -1), y) 
@@ -82,7 +88,7 @@ model = models.Sequential([
 model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy', tf.keras.metrics.AUC(name='auc')])
 
 # Early stopping para evitar overfitting
-early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
+early_stopping = EarlyStopping(monitor='val_loss', patience=10, restore_best_weights=True)
 
 
 history = model.fit(X_train, y_train, epochs=20, validation_data=(X_val, y_val), class_weight=class_weights, callbacks=[early_stopping])

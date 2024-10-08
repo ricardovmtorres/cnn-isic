@@ -89,7 +89,7 @@ model.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy',
 early_stopping = EarlyStopping(monitor='val_loss', patience=5, restore_best_weights=True)
 
 # Treinamento com os dados normalizados e validando a cada época
-history = model.fit(X_train, y_train, epochs=10, validation_data=(X_val, y_val), class_weight=class_weights, callbacks=[early_stopping])
+history = model.fit(X_train, y_train, epochs=15, validation_data=(X_val, y_val), class_weight=class_weights, callbacks=[early_stopping])
 
 # Avaliação do modelo no conjunto de validação
 val_loss, val_accuracy, val_auc = model.evaluate(X_val, y_val)
