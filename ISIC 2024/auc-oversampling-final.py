@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping
 from imblearn.over_sampling import RandomOverSampler
 
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 BASE_PATH = "./ISIC 2024/isic-2024-challenge"
 image_dir = f"{BASE_PATH}/train-image/image"
 df = pd.read_csv(f'{BASE_PATH}/train-metadata.csv')

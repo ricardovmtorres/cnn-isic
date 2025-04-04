@@ -10,6 +10,10 @@ import matplotlib.pyplot as plt
 from tensorflow.keras.callbacks import EarlyStopping
 from imblearn.over_sampling import RandomOverSampler  # Importando o RandomOverSampler
 
+import sys
+import io
+sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
 # Configurando o caminho base e carregando os dados
 BASE_PATH = "./ISIC 2024/isic-2024-challenge"
 image_dir = f"{BASE_PATH}/train-image/image"
